@@ -31,4 +31,8 @@ public class BitController {
         Thread.sleep(5000);
         return "wake up";
     }
+    @GetMapping("/jenkins")
+    public String jenkins() {
+        return "jenkins /jenkins";
+    }
 }
