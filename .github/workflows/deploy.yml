@@ -26,3 +26,39 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build -x test
+
+
+      - name: Upload start.sh file to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.BIT_SSH_KEY }}
+          port: 22
+          source: "start.sh"
+          target: "/home/ec2-user/"
+          debug: true
+
+      - name: Upload JAR file to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.BIT_SSH_KEY }}
+          port: 22
+          source: "build/libs/bitcoinlion-0.0.1-SNAPSHOT.jar"
+          target: "/home/ec2-user/"
+          debug: true
+
+      - name: SSH to EC2 and run commands
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.BIT_SSH_KEY }}
+          port: 22
+          script: |
+            mv build/libs/bitcoinlion-0.0.1-SNAPSHOT.jar .
+            chmod 755 start.sh
+            ./start.sh
+            
